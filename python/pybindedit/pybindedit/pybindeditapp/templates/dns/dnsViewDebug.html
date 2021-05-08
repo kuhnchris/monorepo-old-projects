@@ -1,0 +1,10 @@
+
+{% for key,value in bindOptions.items %}
+    <h1>{{ key }}</h1>
+    {% for obj in value %}
+<div>
+        {{ obj }}
+</div>
+    {% endfor %}
+{% endfor %}
+<BR>

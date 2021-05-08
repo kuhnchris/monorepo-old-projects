@@ -1,0 +1,16 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: node:8-alpine
+
+    steps:
+      - checkout
+
+      - run:
+          name: Installing dependencies
+          command: npm install
+
+      - run:
+          name: Build
+          command: npm build

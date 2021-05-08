@@ -1,0 +1,55 @@
+{% extends 'praas/template_base.html' %}
+{% block 'content' %}
+
+{% for message in messages %}
+<div class="card text-white bg-secondary mb-5 py-4 text-center">
+    <div class="card-body">
+        <p class="text-white m-0">{{message.text}}</p>
+    </div>
+</div>
+{% endfor %}
+
+Available services for you:
+
+
+<!-- Content Row -->
+<div class="row">
+    {% for item in items %}
+
+
+    <div class="col-md-4 mb-5">
+        <div class="card h-100">
+
+            <div class="card-body">
+                <h2 class="card-title">{{item.title}}</h2>
+                <p class="card-text">{{item.description}}</p>
+            </div>
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-10">
+                        {{item.note}}
+                    </div>
+                    <div class="col-2 px-2">
+                        <a href="{{item.href}}" class="stretched-link btn btn-primary">Go</a>
+                    </div>
+                </div>
+            </div>
+            <a href="{{item.href}}" class="stretched-link"></a>
+
+
+        </div>
+    </div>
+
+    <!-- /.col-md-4 -->
+
+    {% if forloop.counter|divisibleby:3 %}
+</div>
+<!-- Content Row -->
+<div class="row">
+    {% endif %}
+    {% endfor %}
+
+</div>
+<!-- /.row -->
+
+{% endblock %}

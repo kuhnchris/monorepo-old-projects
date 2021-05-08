@@ -1,0 +1,39 @@
+plugins: [ 'jekyll-paginate']
+permalink: /:categories/:title/
+
+highlighter: rouge
+markdown: kramdown
+kramdown:
+  input:  GFM
+  syntax_highlighter: rouge
+
+
+paginate: 10
+paginate_path: "page/:num"
+baseurl: ""
+
+simple_search: https://www.google.com/search
+
+defaults:
+  -
+    scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+      styles : [highlight.css,post.css]
+      scripts : [post.js]
+
+
+
+title: "KuhnChris Brain Dump"
+email: biz@kuhnchris.eu
+description: ""
+
+url: "https://kuhnchris.github.io"
+imgrepo: "https://kuhnchris.github.io/static/img"
+excerpt_separator: <!--more-->
+
+#url: "http://127.0.0.1:4000"
+#imgrepo: "http://127.0.0.1:4000/static/img"
+

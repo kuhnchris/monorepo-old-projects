@@ -1,0 +1,7 @@
+.idea
+venv
+pybindedit/named.conf
+**/__pycache__
+pybindedit/db.sqlite3
+**/db.sqlite3
+pybindedit/static

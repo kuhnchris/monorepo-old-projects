@@ -1,0 +1,11 @@
+Django==2.2.13
+django-autocomplete-light==3.3.2
+mccabe==0.6.1
+Pillow==6.2.0
+pycodestyle==2.4.0
+pydocstyle==3.0.0
+pyflakes==2.0.0
+pylama==7.6.6
+pytz==2018.7
+six==1.12.0
+snowballstemmer==1.2.1

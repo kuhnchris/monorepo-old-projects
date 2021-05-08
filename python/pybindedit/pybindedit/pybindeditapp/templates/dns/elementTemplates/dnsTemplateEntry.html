@@ -1,0 +1,33 @@
+{% comment %}
+    parameters:
+        additional_row_css: "hidden"
+        id: "template-entry"
+        subdomain: ""
+        ttl: ""
+        dir: ""
+        type: ""
+        target: ""
+        disabled: False/True
+{% endcomment %}
+<div class="row {{ additional_row_css }}" ondrop="drop(event)" ondragover="allowDrop(event)"  draggable="true" ondragstart="drag(event)" id="{{ id }}">
+    <div class="col-2">
+        <div class="row">
+            <div class="col-8 {{obj.type}}">
+                {% if disabled == True %}
+                    disabled-entry
+                {% else %}
+                    entry
+                {% endif %}
+            </div>
+            <div class="col-4">
+                <a href="#" onclick="javascript:deleteRow()"><i class="fas fa-minus-square"></i></a>
+                <a href="#" onclick="javascript:editRow()"><i class="fas fa-edit"></i></a>
+            </div>
+        </div>
+    </div>
+    <div class="col-3 editable {{obj.type}}" contenteditable="true" id="templateEntrySubdomain">{{ subdomain }}</div>
+    <div class="col-1 editable {{obj.type}}" contenteditable="true" id="templateEntryTTL">{{ ttl }}</div>
+    <div class="col-1 editable {{obj.type}}" contenteditable="true" id="templateEntryEntryDir">{{ dir }}</div>
+    <div class="col-1 editable {{obj.type}}" contenteditable="true" id="templateEntryEntryType">{{ type }}</div>
+    <div class="col-4 editable {{obj.type}}" contenteditable="true" id="templateEntryTarget">{{ target }}</div>
+</div>

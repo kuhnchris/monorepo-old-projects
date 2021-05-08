@@ -1,0 +1,36 @@
+{
+  "name": "v4l2-ioctl",
+  "version": "0.0.1",
+  "description": "an ioctl v4l2 wrapper implementation",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kuhnchris/node-v4l2-ioctl.git"
+  },
+  "keywords": [
+    "v4l2",
+    "node"
+  ],
+  "author": "kuhnchris",
+  "license": "CC-BY-SA-4.0",
+  "bugs": {
+    "url": "https://github.com/kuhnchris/node-v4l2-ioctl/issues"
+  },
+  "homepage": "https://github.com/kuhnchris/node-v4l2-ioctl#readme",
+  "dependencies": {
+    "@types/ref": "0.0.28",
+    "@types/ref-array": "0.0.28",
+    "@types/ref-struct": "0.0.29",
+    "@types/ref-union": "0.0.28",
+    "ioctl": ">0.0.0",
+    "ref": "^1.3.5",
+    "ref-array": "^1.2.0",
+    "ref-struct": "^1.1.0",
+    "ref-union": "^1.0.1",
+    "typescript": "^3.4.5"
+  }
+}

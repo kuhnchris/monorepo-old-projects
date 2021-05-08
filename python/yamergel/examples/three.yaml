@@ -1,0 +1,33 @@
+
+services:
+  openvpn:
+    cap_add:
+     - NET_ADMIN
+    privileged: true
+    image: kylemanna/openvpn
+    container_name: openvpn-internal
+    ports:
+     - "1194:1194/udp"
+    restart: always
+    volumes:
+     - /docker/data/openvpn/etc/openvpn:/etc/openvpn
+    sysctls:
+     - net.ipv6.conf.all.disable_ipv6=0
+     - net.ipv6.conf.default.forwarding=1
+     - net.ipv6.conf.all.forwarding=1
+     - net.ipv6.conf.all.proxy_ndp=1
+    networks:
+     - ovpnNet
+     - www-internal
+
+networks:
+  ovpnNet:
+    driver: bridge
+    enable_ipv6: true
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.222.0.0/16
+  www-external:
+  www-internal:
+    internal: true

@@ -1,0 +1,18 @@
+<li>{% if obj.keys or obj.append %}<span class="caret">{% endif %}{{title}}{% if obj.keys or obj.append %}</span><ul class="nested">{% endif %}
+    {% if obj.keys %}
+        {% for inner_obj in obj %}
+            {% with obj=obj[inner_obj], title=inner_obj %}
+            {% include 'treeloop.html' %}
+            {% endwith %}
+        {% endfor %}
+    {% elif obj.append %}
+        {% for inner_obj in obj %}
+            {% with obj=inner_obj, title=loop.index %}
+            {% include 'treeloop.html' %}
+            {% endwith %}
+        {% endfor %}
+    {% else %}
+        : {{obj}}
+    {% endif %}
+    {% if obj.keys or obj.append %}</ul>{% endif %}
+</li>

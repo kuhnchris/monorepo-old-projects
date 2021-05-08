@@ -1,0 +1,58 @@
+{% extends "template.html" %}
+{% block style %}
+  .row:nth-child(even) {
+    background-color: rgba(0,0,0,.1);
+  }
+  .row:nth-child(odd) {
+    background-color: rgba(255,255,255);
+  }
+{% endblock %}
+{% block content_title %}
+Invoice {{ selectedInvoice.id }} - {% if editmode %}(EDIT){% else %}(VIEW){% endif %} - Details
+{% endblock %}
+{% block content %}
+<p><span class="font-weight-bold" {% if editmode %}contenteditable{% endif %}>Invoice balance:</span> {{ selectedInvoice_balance }}<BR>
+<span class="font-weight-bold" {% if editmode %}contenteditable{% endif %}>Vendor:</span> {{ selectedInvoice.vendor.name }}<BR>
+    {% if selectedInvoice.image or editmode%}
+<span class="font-weight-bold" {% if editmode %}contenteditable{% endif %}>Image:</span>  {{ selectedInvoice.image.url }}
+    {% endif %}
+  </p>
+
+  <p>Invoice items:</p>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-1 text-center font-weight-bold">Item</div>
+      <div class="col-sm-1 text-center font-weight-bold">Amount</div>
+      <div class="col-sm-1 text-center font-weight-bold">Price</div>
+      <div class="col-sm-1 text-center font-weight-bold">Currency</div>
+      <div class="col-sm font-weight-bold">Material/text (grp)</div>
+    </div>
+  {% for item in selectedInvoice.positions.all %}
+    <div class="row">
+      <div class="col-sm-1 text-center ">
+        {{ item.position }}
+      </div>
+      <div class="col-sm-1 text-center">
+        {% if item.purchase_amount %}
+        {{ item.purchase_amount }}
+        {% else %}
+          (invalid)
+        {% endif %}
+      </div>
+      <div class="col-sm-1 text-center">
+        {{ item.per_amount_price }}
+      </div>
+      <div class="col-sm-1 text-center">
+        {{ item.currency }}
+      </div>
+      <div class="col-sm">
+        {{ item.material.name }}{{ item.lineText }}
+        {% if item.materialGroup.name %}
+          ( {{ item.materialGroup.name }} )
+        {% endif %}
+      </div>
+    </div>
+  {% endfor %}
+  </div>
+  <BR>
+{% endblock %}

@@ -1,0 +1,154 @@
+<html>
+
+<head>
+    <title>WYSIWYG Editor</title>
+    <script id="sap-ui-bootstrap" type="text/javascript"
+        src="https://openui5.hana.ondemand.com/1.81.1/resources/sap-ui-core.js" data-sap-ui-theme="sap_belize"
+        data-sap-ui-libs="sap.m"></script>
+    <script>
+        sap.ui.getCore().attachInit(function () {
+            // panelReference
+            var lp = document.getElementById("leftPane");
+
+            // reflection: display all "sap.m" objects in left panel
+            Object.getOwnPropertyNames(sap.m).forEach((x)=>{ 
+
+                // create div, add onClick
+                var y = document.createElement("div");
+                y.innerText = x;
+                y.onclick = function(xx){labelTouched(sap.m[x])};
+                lp.appendChild(y);
+
+            });
+            
+        });
+    </script>
+    <script>
+        // references
+        var currentActiveObject = null;
+        var rightPane = document.getElementById("rightPane");
+        var rightPaneProperties = [];
+        var eventCovered = false; // trigger to avoid deselect
+
+        function labelTouched(t) {
+            eventCovered = true;
+            
+            // put new object on content
+            var w = new t({ text: 'WYSIWYG Test' }).placeAt('content');
+
+            // need "afterRendering" as we dom-manipulate the UI5 object
+            w.addEventDelegate({
+                "onAfterRendering":
+                    () => {
+                        // add "onClick" (possibly add hover aswell to UI-mark)
+                        w.getDomRef().onclick = function (x) { 
+                            eventCovered = true;
+                            currentActiveObject = w;
+
+                            // fetch property pane
+                            if (rightPane == null)
+                                rightPane = document.getElementById("rightPane");
+
+                            
+                            // show panel, clear panel
+                            rightPane.classList.remove("hidden");
+                            rightPane.innerHTML = "";
+                            rightPaneProperties = [];
+                            
+                            // get properties from object
+                            var a=Object.getOwnPropertyNames(w.__proto__);
+                            a.forEach((aa)=> { 
+                                // only display properties that have Getter & Setter
+                                // check Getter
+                                if (aa.startsWith("get")){ 
+                                    aaa= aa; 
+                                    aaa[0] = 's'; 
+                                    // check matching Setter
+                                    if (a.indexOf(aaa) >= 0) { 
+
+                                        // add to property panel
+                                        var propName = aa.substr(3);
+                                        rightPaneProperties.push(propName);
+
+                                        // new div
+                                        var propDiv = document.createElement('div');
+                                        propDiv.innerText = propName;
+                                        propDiv.onclick = function(y){
+                                            // div event (for now, just call the setMethod with static value)
+                                            eventCovered = true;
+                                            w['set'+propName]("aaa");
+                                        }
+
+                                        // add to panel
+                                        rightPane.appendChild(propDiv);
+                                    } 
+                                } 
+                            });
+                            
+                        };
+                    }
+            });
+        }
+
+        function dragStarted() {
+            console.log("dragStart");
+        }
+        function dragEnd() {
+            console.log("dragEnded");
+        }
+
+        function deselect() {
+            if (eventCovered === true)
+            {
+                eventCovered = false;
+                return;
+            }
+            rightPane.innerHTML = "";
+            rightPaneProperties = [];
+            currentActiveObject = null;
+        }
+    </script>
+    <style>
+        .left {
+            position: absolute;
+            left: 5px;
+            width: 20%;
+            height: 100%;
+            background-color: rgba(220, 220, 220, 1);
+        }
+
+        .right {
+            position: absolute;
+            right: 5px;
+            width: 20%;
+            min-width: 20%;
+            height: 100%;
+            background-color: rgba(220, 220, 220, .4);
+        }
+
+        .content {
+            background-color: rgba(100, 100, 100, .3);
+            position: absolute;
+            left: 21%;
+            top: 0px;
+            right: 0x;
+            bottom: 0px;
+            min-width: 80%;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body ondragend='dragEnd()' >
+    <div id='leftPane' class="left">
+    </div>
+    <div id='content' class="content" onclick="deselect()">
+
+    </div>
+    <div id='rightPane' class="right hidden"></div>
+</body>
+
+</html>

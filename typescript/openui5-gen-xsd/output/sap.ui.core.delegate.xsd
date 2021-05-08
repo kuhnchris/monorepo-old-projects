@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+targetNamespace="sap.ui.core.delegate"
+xmlns="sap.ui.core.delegate"
+    xmlns:n0="sap.ui.base"
+elementFormDefault="qualified">
+<xs:import schemaLocation="sap.ui.base.xsd" namespace="sap.ui.base" />
+      <xs:element name="ItemNavigation" type="ItemNavigation" />
+  <xs:complexType name="ItemNavigation">
+    <xs:annotation>
+      <xs:documentation>
+Delegate for the navigation between DOM nodes with the keyboard.
+
+The &lt;code&gt;ItemNavigation&lt;/code&gt; provides keyboard and mouse navigation between DOM nodes representing items.
+This means that controls rendering a list of items can attach this delegate to get a common keyboard and mouse support
+to navigate between these items.
+It is possible to navigate between the items via the arrow keys.
+If needed, paging using the Page Up and Page Down keys is possible. (To activate call &lt;code&gt;setPageSize&lt;/code&gt; with a value &gt; 0.)
+HOME and END keys are also supported.
+Focusing an item via mouse also is also supported. For mouse navigation, the &lt;code&gt;mousedown&lt;/code&gt; event is used.
+
+As the &lt;code&gt;ItemNavigation&lt;/code&gt; works with DOM nodes, the items and the control area must be provided as
+DOM references. There is one root DOM reference (set via &lt;code&gt;setRootDomRef&lt;/code&gt;).
+All item DOM references (set via &lt;code&gt;setItemDomRefs&lt;/code&gt;) must be places somewhere inside of this root DOM reference.
+Only focusable items are used for the navigation, meaning disabled items or separator items are just ignored by navigating
+through the items. In some cases however, it makes sense to put the non-focusable items in the array of the DOM references to
+keep the indexes stable or like in the calling control.
+&lt;b&gt;Hint:&lt;/b&gt; To make a DOM reference focusable a &lt;code&gt;tabindex&lt;/code&gt; of -1 can be set.
+
+&lt;b&gt;Note&lt;/b&gt; After re-rendering of the control or changing the DOM nodes of the control, the
+DOM references of the &lt;code&gt;ItemNavigation&lt;/code&gt; must be updated. Then the same item
+(corresponding to the index) will get the focus.
+
+The &lt;code&gt;ItemNavigation&lt;/code&gt; adjusts the &lt;code&gt;tabindex&lt;/code&gt; of all DOM references relating to the current
+focused item. So if the control containing the items gets the focus (e.g. via tab navigation),
+it is always the focused items which will be focused.
+
+&lt;b&gt;Note:&lt;/b&gt; If the &lt;code&gt;ItemNavigation&lt;/code&gt; is nested in another &lt;code&gt;ItemNavigation&lt;/code&gt;
+(e.g. &lt;code&gt;SegmentedButton&lt;/code&gt; in &lt;code&gt;Toolbar&lt;/code&gt;), the &lt;code&gt;RootDomRef&lt;/code&gt; will always have &lt;code&gt;tabindex&lt;/code&gt; -1.
+
+Per default the &lt;code&gt;ItemNavigation&lt;/code&gt; cycles over the items.
+It navigates again to the first item if the Arrow Down or Arrow Right key is pressed while
+the last item has the focus. It navigates to the last item if arrow up or
+arrow left is pressed while the first item has the focus.
+If you want to stop the navigation at the first and last item,
+call the &lt;code&gt;setCycling&lt;/code&gt; method with a value of &lt;code&gt;false&lt;/code&gt;.
+
+It is possible to have multiple columns in the item navigation. If multiple columns
+are used, the keyboard navigation changes. The Arrow Right and Arrow Left keys will take the user to the next or previous
+item, and the Arrow Up and Arrow Down keys will navigate the same way but in a vertical direction.
+
+The &lt;code&gt;ItemNavigation&lt;/code&gt; also allows setting a selected index that is used to identify
+the selected item. Initially, if no other focus is set, the selected item will be the focused one.
+Note that navigating through the items will not change the selected item, only the focus.
+(For example a radio group has one selected item.)
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="n0:EventProvider">
+  </xs:extension>
+</xs:complexContent>
+  </xs:complexType>
+  <xs:element name="ScrollEnablement" type="ScrollEnablement" />
+  <xs:complexType name="ScrollEnablement">
+    <xs:annotation>
+      <xs:documentation>
+Delegate for touch scrolling on mobile devices.
+
+This delegate uses native scrolling of mobile and desktop browsers. Third party scrolling libraries are not supported.
+
+Controls that implement ScrollEnablement should additionally provide the getScrollDelegate method that returns
+the current instance of this delegate object
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="n0:Object">
+  </xs:extension>
+</xs:complexContent>
+  </xs:complexType>
+</xs:schema>

@@ -1,0 +1,290 @@
+<html>
+
+<head>
+    <script src="web3.min.js"></script>
+
+    <script type="text/javascript">
+        // simple cross-browser ajax helper
+
+        function createImg(src, alt, title) {
+            img = document.createElement('img');
+            img.src = src;
+            if (alt != null) img.alt = alt;
+            if (title != null) img.title = title;
+            return img;
+        }
+        var ajaxGet = function (url, callback) {
+            var callback = (typeof callback == 'function' ? callback : false), xhr = null;
+            try {
+                xhr = new XMLHttpRequest();
+            } catch (e) {
+                try {
+                    xhr = new ActiveXObject("Msxml2.XMLHTTP");
+                } catch (e) {
+                    xhr = new ActiveXObject("Microsoft.XMLHTTP");
+                }
+            }
+            if (!xhr)
+                return null;
+            xhr.open("GET", url, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && callback) {
+                    callback(xhr.responseText)
+                }
+            }
+            xhr.send(null);
+            return xhr;
+        }
+
+        window.addEventListener('load', async () => {
+            // Modern dapp browsers...
+            if (window.ethereum) {
+                addLog("found window.ethereum...");
+                window.web3 = new Web3(ethereum);
+
+            }
+            // Legacy dapp browsers...
+            else if (window.web3) {
+                addLog("found window.web3...");
+                window.web3 = new Web3(web3.currentProvider);
+
+            }
+            // Non-dapp browsers...
+            else {
+                addLog('Non-Ethereum browser detected. You should consider trying MetaMask!');
+                return;
+            }
+
+            try {
+                // Request account access if needed
+                await ethereum.enable();
+                addLog("account loaded: " + web3.eth.accounts[0]);
+
+                CKtoken = "0x06012c8cf97bead5deae237070f9587f8e7a266d"
+                checkBalanceForToken(CKtoken, web3.eth.accounts[0], "CryptoKitties");
+                checkBalanceForToken("0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359", web3.eth.accounts[0], "DAI");
+                checkBalanceForToken("0x28F4a17f8A99AB90c1a401b85D694B2C0eA40C4b", web3.eth.accounts[0], "WETH");
+                checkBalanceForToken("0x58b6a8a3302369daec383334672404ee733ab239", web3.eth.accounts[0], "LPT");
+                checkBalanceForToken("0x2aea4add166ebf38b63d09a75de1a7b94aa24163", web3.eth.accounts[0], "Kudos");
+                enumerateERC721("0x2aea4add166ebf38b63d09a75de1a7b94aa24163", web3.eth.accounts[0]);
+            } catch (error) {
+                addLog("error. :-(");
+                // User denied account access...
+            }
+
+            var slider = document.getElementById("myRange");
+
+            // Update the current slider value (each time you drag the slider handle)
+            slider.oninput = function () {
+                let p = document.getElementById("imageBox");
+                for (let i = 0; i < p.childNodes.length; i++) {
+                    if (p.childNodes[i].style) {
+                        p.childNodes[i].style.width = this.value;
+                        p.childNodes[i].style.height = this.value;
+                    }
+                }
+                p.style.height = this.value + "px";
+            }
+
+        });
+
+        function enumerateERC721(contractAddr, walletAddr) {
+            abi1 = [{
+                "constant": true,
+                "inputs": [],
+                "name": "name",
+                "outputs": [{ "name": "name", "type": "string" }],
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "symbol",
+                "outputs": [{ "name": "symbol", "type": "string" }],
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [{ "name": "tokenId", "type": "uint256" }],
+                "name": "tokenURI",
+                "outputs": [{ "name": "URI", "type": "string" }],
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [{ "name": "owner", "type": "address" }],
+                "name": "balanceOf",
+                "outputs": [{ "name": "balance", "type": "uint256" }],
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [{ "name": "owner", "type": "address" },
+                { "name": "index", "type": "uint256" }],
+                "name": "tokenOfOwnerByIndex",
+                "outputs": [{ "name": "tokenId", "type": "uint256" }],
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [{ "name": "index", "type": "uint256" }],
+                "name": "tokenByIndex",
+                "outputs": [{ "name": "tokenId", "type": "uint256" }],
+                "type": "function"
+            }
+
+            ];
+            c = web3.eth.contract(abi1);
+            q = c.at(contractAddr);
+            q.name((err, b) => { addLog("determined token name for " + contractAddr + ": " + b); });
+            q.symbol((err, b) => { addLog("determined token symbol for " + contractAddr + ": " + b); });
+            //q.tokenURI(2464, (err,b) => {console.log(err,b)});
+            q.balanceOf(walletAddr, (err1, bal) => {
+                addLog("user " + walletAddr + " has " + contractAddr + " token balance of: " + bal);
+                for (var i = 0; i < bal; i++) {
+                    q.tokenOfOwnerByIndex(walletAddr, i, (err2, tokenId) => {
+                        addLog("user " + walletAddr + " index " + i + " tokenId: " + tokenId);
+                        q.tokenURI(tokenId, (err3, URI) => {
+                            addLog("user " + walletAddr + ", tokenId " + tokenId + ", URI: " + URI);
+                            ajaxGet(URI, (resp) => {
+                                resp = JSON.parse(resp);
+                                if (!resp)
+                                    return;
+                                addLog("loaded JSON object: " + resp);
+
+                                document.getElementById("imageBox").appendChild(createImg(resp["image"]));
+                            });
+                        });
+                    });
+                }
+            });
+
+        }
+
+        function checkBalanceForToken(token, wallet, tokenName) {
+            let minABI = [
+                // balanceOf
+                {
+                    "constant": true,
+                    "inputs": [{ "name": "_owner", "type": "address" }],
+                    "name": "balanceOf",
+                    "outputs": [{ "name": "balance", "type": "uint256" }],
+                    "type": "function"
+                },
+                // decimals
+                {
+                    "constant": true,
+                    "inputs": [],
+                    "name": "decimals",
+                    "outputs": [{ "name": "", "type": "uint8" }],
+                    "type": "function"
+                }
+            ];
+
+            // Get ERC20 Token contract instance
+            let contract = web3.eth.contract(minABI).at(token);
+
+            // Call balanceOf function
+            contract.balanceOf(wallet, (error, balance) => {
+                // Get decimals
+                contract.decimals((error, decimals) => {
+                    // calculate a balance
+                    balance = balance.div(10 ** decimals);
+                    addLog(balance.toPrecision(3).toString() + " (" + balance.toString() + ") " + tokenName + " for " + wallet);
+                });
+            });
+        }
+
+
+
+        function addLog(g) {
+            var f = document.getElementById("log");
+            if (f.value.trim() !== "") {
+                f.value = f.value + '\n';
+            }
+            f.value = f.value + g;
+        }
+
+        function onEnter(ev) {
+            addLog("poop - " + ev);
+
+        }
+
+
+    </script>
+    <style>
+        .slidecontainer {
+            width: 100%;
+            /* Width of the outside container */
+        }
+
+        /* The slider itself */
+        .slider {
+            -webkit-appearance: none;
+            /* Override default CSS styles */
+            appearance: none;
+            width: 100%;
+            /* Full-width */
+            height: 25px;
+            /* Specified height */
+            background: #d3d3d3;
+            /* Grey background */
+            outline: none;
+            /* Remove outline */
+            opacity: 0.7;
+            /* Set transparency (for mouse-over effects on hover) */
+            -webkit-transition: .2s;
+            /* 0.2 seconds transition on hover */
+            transition: opacity .2s;
+        }
+
+        /* Mouse-over effects */
+        .slider:hover {
+            opacity: 1;
+            /* Fully shown on mouse-over */
+        }
+
+        /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            /* Override default look */
+            appearance: none;
+            width: 25px;
+            /* Set a specific slider handle width */
+            height: 25px;
+            /* Slider handle height */
+            background: #4CAF50;
+            /* Green background */
+            cursor: pointer;
+            /* Cursor on hover */
+        }
+
+        .slider::-moz-range-thumb {
+            width: 25px;
+            /* Set a specific slider handle width */
+            height: 25px;
+            /* Slider handle height */
+            background: #4CAF50;
+            /* Green background */
+            cursor: pointer;
+            /* Cursor on hover */
+        }
+    </style>
+</head>
+
+<body>
+    <input id="inputArea" style="font-family:'Courier New', Courier, monospace; width: 100%" onsubmit="onEnter"></input>
+    <div class="slidecontainer">
+        <input type="range" min="1" max="200" value="30" class="slider" id="myRange">
+    </div>
+    <div style="width: 100%; height: 40px" id="imageBox">
+
+    </div>
+    <textarea id="log" style="font-family:'Courier New', Courier, monospace; width: 100%; height: 100%">
+
+</textarea>
+
+
+</body>
+
+</html>

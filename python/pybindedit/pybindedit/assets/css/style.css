@@ -1,0 +1,28 @@
+.read-only {
+    color: rgba(0,0,0,.5)
+}
+.disabled-entry {
+    color: rgba(0,0,0,.5);
+    background-color: rgba(255,255,255,1) !important;
+}
+.editable {
+    background-color: rgba(0,255,0,.1)
+}
+.header {
+    font-weight: bold;
+}
+.optLeft {
+    background-color: rgba(0,0,255,.1)
+}
+.optRight {
+    background-color: rgba(0,0,255,.05)
+}
+.container {
+    max-width: 99%
+}
+.hidden {
+    display: none;
+}
+.bg-shady {
+    background-color: rgba(50,50,50,.5)
+}

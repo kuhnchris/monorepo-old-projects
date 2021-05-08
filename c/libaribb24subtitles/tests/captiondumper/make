@@ -1,0 +1,2 @@
+OPWD=$PWD; cd ../..; make; cd "$OPWD";
+gcc -o a main.c -L../../ -I../../src/ -laribb24captions -lm

@@ -1,0 +1,19 @@
+services:
+  guacd:
+    image: "guacamole/guacd"
+    networks:
+      - www-internal
+
+  guacamole:
+    image: "guacamole/guacamole"
+    depends:
+      - guacd
+      - postgresql
+    environment:
+      POSTGRES_HOSTNAME: postgresql
+      POSTGRES_PORT: 5432
+      POSTGRES_DATABASE: guacamole_db
+      POSTGRES_USER: guacamole
+      POSTGRES_PASSWORD: guacamole
+    networks:
+      - www-internal

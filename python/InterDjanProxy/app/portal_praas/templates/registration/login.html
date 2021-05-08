@@ -1,0 +1,26 @@
+{% extends 'praas/template_base.html' %}
+{% load widget_tweaks %}
+{% block 'content' %}
+<div class="card text-white bg-secondary mb-5 py-4 text-center">
+  <div class="card-body">
+    <p class="text-white m-0">Please login.</p>
+  </div>
+</div>
+
+<div class="col-md-4 mb-5">
+      <form method="post">
+        {% csrf_token %}
+{% for field in form %}
+    <div class="form-group">
+        {{ field.errors }}
+        {{ field.label_tag }}
+        {% render_field field class+="form-control" %}
+        {% if field.help_text %}
+        <p class="help">{{ field.help_text|safe }}</p>
+        {% endif %}
+    </div>
+{% endfor %}
+        <button type="submit" class="btn btn-primary">Login</button>
+      </form>
+</div>
+{% endblock %}

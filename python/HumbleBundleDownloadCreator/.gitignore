@@ -1,0 +1,7 @@
+venv
+infos/
+downloads/
+.vscode/
+books_exported/
+exec.bat
+settings.py

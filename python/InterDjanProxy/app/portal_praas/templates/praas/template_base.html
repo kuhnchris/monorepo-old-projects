@@ -1,0 +1,12 @@
+{% extends 'praas/base.html' %}
+{% block 'title' %}Service Proxy Portal{% endblock %}
+{% block 'nav-title' %}Service Proxy Portal (SEPP){% endblock %}
+{% block 'head-additional' %}{% endblock %}
+{% block 'menuitems' %}
+    {% for menuitem in menuitems %}
+        <li class="nav-item active">
+            <a class="nav-link" href="{{menuitem.href}}">{{menuitem.description}}</a>
+        </li>
+    {% endfor %}
+{% endblock %}
+{% block 'content' %}undefined context as template_base is called.{% endblock %}

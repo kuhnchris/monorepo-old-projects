@@ -1,0 +1,19 @@
+on: [push]
+
+jobs:
+  testDockerJob:
+    runs-on: ubuntu-latest
+    name: DockerJob
+    steps:
+    - uses: actions/checkout@v2
+    - name: Write file into docker container
+      id: ExampleDockerActionWritingAFile
+      uses: kuhnchris/github-actions-example@v2
+    - name: Commit changes
+      uses: EndBug/add-and-commit@v5
+      with:
+        author_name: Workflow
+        author_email: beepboop@kuhnchris.eu
+        message: "Workflow processing files"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

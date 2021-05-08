@@ -1,0 +1,99 @@
+{% extends "template.html" %}
+{# Don't forget that one ! #}
+{% load static %}
+
+{% block content %}
+<style>
+    select, input {
+    width: 100%;
+    }
+    .hidden {
+        display: none;
+    }
+</style>
+<script>
+    function newLine(){
+        x=$('.hidden')[0];
+        y=x.cloneNode(true);
+        y.classList.remove("hidden");
+        x.parentElement.insertBefore(y,$('.fa-plus-square')[0].parentElement.parentElement.parentElement);
+    }
+</script>
+                    <div class="row hidden">
+                        <div class="col-2">{{ lineForm.ledger.errors }}{{ lineForm.ledger }}</div>
+                        <div class="col-2">{{ lineForm.material.errors }}{{ lineForm.material }}</div>
+                        <div class="col-2">{{ lineForm.purchase_amount.errors }}{{ lineForm.purchase_amount }}</div>
+                        <div class="col-2">{{ lineForm.unit_of_measure.errors }}{{ lineForm.unit_of_measure }}</div>
+                        <div class="col-2">{{ lineForm.per_amount_price.errors }}{{ lineForm.per_amount_price }}</div>
+                        <div class="col-2">{{ lineForm.currency.errors }}{{ lineForm.currency }}</div>
+                    </div>
+<form action="/invoices/add2" method="post">
+    {% csrf_token %}
+    <div class="container">
+        <div class="row mb-3">
+            <div class="col-3">{{ form.pk.errors }}Invoice Number: {{ form.pk }}</div>
+            <div class="col-3">{{ form.vendor.errors }}Vendor: {{ form.vendor }}</div>
+            <div class="col-2">{{ form.tryOCR.errors }}OCR: {{ form.tryOCR }}</div>
+            <div class="col-4">{{ form.image.errors }}Image: {{ form.image }}</div>
+        </div>
+
+        {% if wideform %}
+        {% else %}
+        {% endif %}
+        {% for lineForm in invLines %}
+            {% if wideform %}
+                <div class="row">
+                    <div class="col-1">Account:</div>
+                    <div class="col-3">{{ lineForm.ledger.errors }}{{ lineForm.ledger }}</div>
+                    <div class="col-1">Material:</div>
+                    <div class="col-3">{{ lineForm.material.errors }}{{ lineForm.material }}</div>
+                </div><div class="row">
+                    <div class="col-1">Amount:</div>
+                    <div class="col-3">{{ lineForm.purchase_amount.errors }}{{ lineForm.purchase_amount }}</div>
+                    <div class="col-1">Unit:</div>
+                    <div class="col-3">{{ lineForm.unit_of_measure.errors }}{{ lineForm.unit_of_measure }}</div>
+                </div><div class="row">
+                    <div class="col-1">Price: </div>
+                    <div class="col-3">{{ lineForm.per_amount_price.errors }}{{ lineForm.per_amount_price }}</div>
+                    <!--<div class="col-3">{{ lineForm.per_amount_price_unit.errors }}{{ lineForm.per_amount_price_unit }}</div>-->
+                    <div class="col-1">Currency: </div>
+                    <div class="col-3">{{ lineForm.currency.errors }}{{ lineForm.currency }}</div>
+                </div>
+            {% else %}
+                {% if forloop.counter0 == 0 %}
+                    <div class="row">
+                        <div class="col-2">Ledger</div>
+                        <div class="col-2">Material</div>
+                        <div class="col-2">Amount</div>
+                        <div class="col-2">UoM</div>
+                        <div class="col-2">Price</div>
+                        <div class="col-2">Currency</div>
+                    </div>
+
+                {% endif %}
+                <div class="row">
+                    <div class="col-2">{{ lineForm.ledger.errors }}{{ lineForm.ledger }}</div>
+                    <div class="col-2">{{ lineForm.material.errors }}{{ lineForm.material }}</div>
+                    <div class="col-2">{{ lineForm.purchase_amount.errors }}{{ lineForm.purchase_amount }}</div>
+                    <div class="col-2">{{ lineForm.unit_of_measure.errors }}{{ lineForm.unit_of_measure }}</div>
+                    <div class="col-2">{{ lineForm.per_amount_price.errors }}{{ lineForm.per_amount_price }}</div>
+                    <div class="col-2">{{ lineForm.currency.errors }}{{ lineForm.currency }}</div>
+                </div>
+            {% endif %}
+        {% endfor %}
+        <div class="row"><div class="col-12"><a href="#" onclick="javascript:newLine()"><i class="fa fa-plus-square"></i></a></div></div>
+        <div class="row"><div class="col-12">Notes:</div></div>
+        <div class="row"><div class="col-12">{{ form.notes.errors }}{{ form.notes }}</div></div>
+        <div class="row"><div class="col-12">OCRed Text:</div></div>
+        <div class="row"><div class="col-12">{{ form.ocrText.errors }}{{ form.ocrText }}</div></div>
+        <div class="row">
+            <div class="col-12">
+                <input type="submit" class="btn btn-primary" value="Submit" novalidate>
+            </div>
+        </div>
+        <div class="row"><div class="col-12">&nbsp;</div></div>
+    </div>
+</form>
+<script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+
+{% endblock %}

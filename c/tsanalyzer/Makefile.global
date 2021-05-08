@@ -1,0 +1,6 @@
+CC = gcc
+CFLAGS = -Wall -g -DVERBOSE
+LDFLAGS = 
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $<

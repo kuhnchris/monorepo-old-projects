@@ -1,0 +1,33 @@
+{
+  "name": "openui5-gen",
+  "version": "0.0.0",
+  "description": "UI5 Generation Project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "CC-BY-SA-4.0 (see LICENSE.MD)",
+  "dependencies": {
+    "@openui5/sap.f": "^1.73.2",
+    "@openui5/sap.m": "^1.73.2",
+    "@openui5/sap.ui.core": "^1.73.2",
+    "@openui5/sap.ui.unified": "^1.73.2",
+    "@types/node": "^12.12.22",
+    "@types/sqlite3": "^3.1.6",
+    "@types/yargs": "^13.0.4",
+    "bomstrip": "^0.1.4",
+    "jsdoc-parse": "^4.0.1",
+    "jsdoc-to-markdown": "^5.0.3",
+    "sqlite": "^3.0.3",
+    "strip-bom": "^4.0.0",
+    "strip-bom-buf": "^2.0.0",
+    "tslint": "^5.20.1",
+    "typescript": "^3.7.4",
+    "typescript-tslint-plugin": "^0.5.5",
+    "yargs": "^15.0.2"
+  },
+  "devDependencies": {
+    "@types/jquery": "^3.3.31"
+  }
+}

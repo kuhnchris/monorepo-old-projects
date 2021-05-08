@@ -1,0 +1,42 @@
+{% extends "template.html" %}
+{% block style %}
+  .row:nth-child(even) {
+    background-color: rgba(0,0,0,.1);
+  }
+  .row:nth-child(odd) {
+    background-color: rgba(255,255,255);
+  }
+{% endblock %}
+{% block content_title %}
+Ledger "{{ selectedLedger.name }}" - Details
+{% endblock %}
+{% block content %}
+  <p>
+    Ledger name: {{ selectedLedger.name }}<BR>
+    Ledger balance: {{ selectedLedger_balance }}<BR>
+    Ledger type: {{ selectedLedger_ledgerType }}<BR>
+    Closes against ledger: {{ selectedLedger.close_against }}
+  </p>
+  <p>Last 10 activities on this ledger:</p>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-2">Amount</div>
+      <div class="col-sm">Material</div>
+      <div class="col-sm-3">Reference</div>
+    </div>
+  {% for item in selectedLedger.invoiceItems.all %}
+    <div class="row">
+      <div class="col-sm-2">
+        {{ item.per_amount_price }} {{ item.currency }}
+      </div>
+      <div class="col-sm">
+        {{ item.material.name }} {{ item.lineText }}
+      </div>
+      <div class="col-sm-3">
+        Invoice: {{ item.head.id }} : {{ item.position }} ({{ item.head.vendor.short_name }})
+      </div>
+    </div>
+  {% endfor %}
+  </div>
+  <BR>
+{% endblock %}

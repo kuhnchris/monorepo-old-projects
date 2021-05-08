@@ -1,0 +1,135 @@
+<!doctype html>
+<html>
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+</head>
+
+<body>
+    <div class="app-centered container align-items-center justify-content-center">
+        <div class="row mb-2">
+            <div class="col">
+                <div class="card mx-auto" style="max-width: 50%" id="capture">
+                    <h5 class="card-header">Splash Card for <span data-bind="text: userName">user</span></h5>
+                    <div class="card-body">
+                        <div class="row mb-2">
+                            <div class="col-md-4">
+                                <img style="width: 100%" data-bind="attr: { src: avatar }"></img>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="mb-2"><span data-bind="text: fullName"></span> ( <span
+                                        data-bind="text: userName"></span> )</div>
+                                <div class="mb-2" data-bind="text: text"></div>
+                                <div data-bind="text: subtext"></div>
+
+                            </div>
+                        </div>
+
+                        <h5 class="card-title">Kudos received:</h5>
+                        <div id="imageBox"></div>
+                    </div>
+                    <h5 class="card-header"><small>For address: <span id="eth"
+                                data-bind="text: ethAddr()"></span></small></h5>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-2 mb-2">
+            <div class="col text-center" style="color: white;">Fetch:<BR>
+                <div class="row">
+                    <div class="col">
+                        <button type="button" class="btn btn-primary" id="fetchEthAddr"
+                            data-bind="{ attr: { disabled: hasEthAddr() } }">
+                            ETH Address</button>
+                    </div>
+                    <div class="col">
+                        <button type="button" class="btn btn-primary" id="fetchKudos"
+                            data-bind="{ attr: { disabled: !hasEthAddr() } }">
+                            Kudos</button>
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col">
+                        <button type="button" class="btn btn-primary" id="fetchGithubData"
+                            data-bind="{ attr: { disabled: !hasEthAddr() } }">
+                            GitHub user data</button>
+                    </div>
+                    <div class="col">
+                        <button type="button" class="btn btn-primary" id="fetch3Box"
+                            data-bind="{ attr: { disabled: !hasEthAddr() } }">
+                            3Box Public Profile</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col text-center" style="color: white;"> Reset:<BR>
+                <button type="button" class="btn btn-primary" id="clearUserData"
+                    data-bind="{ attr: { disabled: !hasEthAddr() } }">
+                    Clear user data</button>
+            </div>
+            <div class="col text-center" style="color: white;">Screenshot:<BR>
+                <button type="button" class="btn btn-primary" id="captureBtn"
+                    data-bind="{ attr: { disabled: !hasEthAddr() } }">
+                    <span class="spinner-border spinner-border-sm hidden" role="status"></span>
+                    Make screenshot of card
+                </button>
+
+            </div>
+        </div>
+        <div class="row mt-1 mb-1 footer-dressup">
+            <div class="col text-center"><small>
+                    Background image - &copy; <a
+                        href="https://www.pexels.com/photo/photo-of-starry-night-sky-1564334/">Free Nature Stock @
+                        Pexels.com</a><BR>
+                    dApp by <a href="http://github.com/kuhnchris">Kuhn Chris</a> - 2019
+                </small></div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="canvasDisplayModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="canvasDisplayModalTitle">Card screenshot</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="canvasDisplayModalContent">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="downloadScreenshot">Download</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="GithubAskModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="GithubAskModalTitle">Enter Github User</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="GithubAskModalContent">
+                    Please enter your github user name:<BR>
+                    <input id="githubUserName" placeholder="octocat" />
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="loadGithubData">Fetch</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

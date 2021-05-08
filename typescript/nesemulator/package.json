@@ -1,0 +1,24 @@
+{
+  "name": "nesemulator",
+  "version": "0.0.1",
+  "description": "a nes / 6502 emulator in ts",
+  "main": "main.ts",
+  "dependencies": {
+    "electron": "^6.0.7",
+    "ts-node": "^8.3.0",
+    "typescript": "^3.6.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "tsc && electron ./dist/main.js"
+  },
+  "keywords": [
+    "nes",
+    "emulator",
+    "6502",
+    "typescript"
+  ],
+  "author": "kuhnchris",
+  "license": "SEE LICENSE IN license.md"
+}

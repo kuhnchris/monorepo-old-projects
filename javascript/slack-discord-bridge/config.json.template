@@ -1,0 +1,7 @@
+{
+"slackHTTPPort": 12321,
+"discordBridgeChannel": "from_slack",
+"slackBridgeChannel": "from_discord",
+"slackToken": "xxx",
+"discordToken": "xxx"
+}

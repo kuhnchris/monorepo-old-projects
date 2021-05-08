@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  dns:
+    image: 'resystit/bind9'
+    hostname: dns-bind
+    volumes:
+      - ./example/named.conf:/etc/bind/named.conf
+      - ./pybindedit/named.conf:/etc/bind/localdomain.localhost.zone.master
+    ports:
+      - 53:53
+      - 53:53/udp
+  app:
+    build: .
+    ports:
+      - 8000:8000

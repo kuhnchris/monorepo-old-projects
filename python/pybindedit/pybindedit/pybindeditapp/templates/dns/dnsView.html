@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load toast %}
+{% load static %}
+{% toast 'title' 'subtitle' 'content' %}
+<head>
+    <meta charset="UTF-8">
+    <title>DNS bind config edit</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous" />
+    <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.6.3/css/solid.css" integrity="sha384-+0VIRx+yz1WBcCTXBkVQYIBVNEFH1eP6Zknm16roZCyeNg2maWEpk/l/KsyFKs7G" rel="stylesheet" />
+    <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.6.3/css/fontawesome.css" integrity="sha384-jLuaxTTBR42U2qJ/pm4JRouHkEDHkVqH0T1nyQXn1mZ7Snycpf6Rl25VBNthU4z0" rel="stylesheet" />
+    <link rel="stylesheet" href={% static "css/style.css" %} />
+    <script src='{% static "js/dnsView.js" %}'></script>
+    {% block toast_javascript %}{% endblock toast_javascript %}
+</head>
+<body onload="javascript:init()">
+    <form id="transmit" method="POST" target="/form/submit">
+
+    </form>
+    <div class="container">
+        {% block toast_html %}{% endblock toast_html %}
+        <div class="container">
+            <h4>Here is the content of your file `{{bindOptions.path}}`:</h4>
+            <div class="row">
+                <div class="col-2 header">
+                    type
+                </div>
+                <div class="col-10 header">
+                    attributes
+                </div>
+            </div>
+        </div>
+        <div class="container mb-5"  >
+            <div class="row hidden" ondrop="drop(event)" ondragover="allowDrop(event)"  draggable="true" ondragstart="drag(event)" id="template-comment">
+                <div class="col-2">
+                    <div class="row">
+                        <div class="col-8">
+                            comment
+                        </div>
+                        <div class="col-4">
+                            <a href="#" onclick="javascript:deleteRow()"><i class="fas fa-minus-square"></i></a>
+                            <a href="#" onclick="javascript:editRow()"><i class="fas fa-edit"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-10 read-only" id="templateCommentFullLine">
+                </div>
+            </div>
+            {% include 'dns/elementTemplates/dnsTemplateGlobalOption.html' with additional_row_css="hidden" id="template-global-opt" full_line="" %}
+
+            {% include 'dns/elementTemplates/dnsTemplateEntry.html' with additional_row_css="hidden" id="template-entry" %}
+
+            {% for key,value in bindOptions.items %}
+            {% if key == "bindDomainEntries" %}
+            {% for obj in value %}
+            {% if obj.type == "global options" %}
+                {% include 'dns/elementTemplates/dnsTemplateGlobalOption.html' with additional_row_css="" id="" full_line=obj.full_line %}
+            {% elif obj.type == "entry" %}
+                {% include 'dns/elementTemplates/dnsTemplateEntry.html' with additional_row_css="" id="" subdomain=obj.subdomain ttl=obj.ttl dir=obj.entrydir type=obj.entrytype target=obj.target %}
+            {% elif obj.type == "disabled-entry" %}
+                {% include 'dns/elementTemplates/dnsTemplateEntry.html' with additional_row_css="" id="" subdomain=obj.subdomain ttl=obj.ttl dir=obj.entrydir type=obj.entrytype target=obj.target disabled=True %}
+            {% elif obj.type == "start of authority" %}
+                {% include 'dns/elementTemplates/dnsTemplateStartOfAuthority.html' with additional_row_css="" id="" subdomain=obj.subdomain dir=obj.entrydir type=obj.entrytype target=obj.target target2=obj.target2 parameters_list=obj.parameters_list%}
+            {% else %}
+            <div class="row" ondrop="drop(event)" ondragover="allowDrop(event)"  draggable="true" ondragstart="drag(event)">
+                <div class="col-2">
+                    <!--<div class="container">-->
+                        <div class="row">
+                            <div class="col-8">
+                                {{ obj.type }}
+                            </div>
+                            <div class="col-4">
+                                <a href="#" onclick="javascript:deleteRow()"><i class="fas fa-minus-square"></i></a>
+                                <a href="#" onclick="javascript:editRow()"><i class="fas fa-edit"></i></a>
+                            </div>
+                        </div>
+                    <!--</div>-->
+                </div>
+                {% if obj.type == "comment" %}
+                <div class="col-10 read-only">
+                    {{ obj.full_line }}
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+            {% endfor %}
+            <div aria-hidden="true" aria-labelledby="AddNewEntryModal" class="modal fade" id="addNewEntryPopup" role="dialog" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle">Add new entry</h5>
+                            <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-6">
+                                        entry-type:
+                                    </div>
+                                    <div class="col-6">
+                                        <select onchange="javascript:evalSelect()" class="modalEntryType">
+                                            <option value=" ">&nbsp;</option>
+                                            <option value="comment">Comment</option>
+                                            <option value="entry">DNS entry</option>
+                                            <option value="global-opt">Global option</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="container hidden add_section" id="div_add_comment">
+                                <div class="row">
+                                    <div class="col-6">comment<BR>(without leading ";")</div>
+                                    <div class="col-6"><input name="i_newComment" class="modalComment" type="text"/></div>
+                                </div>
+                            </div>
+                            <div class="container hidden add_section" id="div_add_global-opt">
+                                <div class="row">
+                                    <div class="col-6">option<BR>(without leading "$")</div>
+                                    <div class="col-6"><input name="i_newOption" class="modalOption" type="text"/></div>
+                                </div>
+                            </div>
+                            <div class="container hidden add_section" id="div_add_entry">
+                                <div class="row">
+                                    <div class="col-6">subdomain</div>
+                                    <div class="col-6"><input name="i_entry_p1" class="modalEntrySubDomain" type="text"/></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">ttl</div>
+                                    <div class="col-6"><input name="i_entry_p2" class="modalEntryTTL" type="text"/></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">direction</div>
+                                    <div class="col-6"><select name="i_entry_p3" class="modalEntryDir">
+                                        <option value=" ">&nbsp;</option>
+                                        <option value="IN">IN</option>
+                                        <option value="OUT">OUT</option>
+                                    </select></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">type</div>
+                                    <div class="col-6">
+                                        <select name="i_entry_p4" class="modalEntryDomainType">
+                                            <!-- TODO: add values dynamically according to RFC
+                                            https://tools.ietf.org/html/rfc1886
+                                            https://en.wikipedia.org/wiki/List_of_DNS_record_types
+                                            -->
+                                            <option value=" ">&nbsp;</option>
+                                            <option value="A">A</option>
+                                            <option value="AAAA">AAAA</option>
+                                            <option value="NS">NS</option>
+                                            <option value="TXT">TXT</option>
+                                            <option value="CNAME">CNAME</option>
+                                            <option value="MX">MX</option>
+                                            <option value="PTR">PTR</option>
+                                            <option value="SOA">SOA</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">target</div>
+                                    <div class="col-6"><input name="i_entry_p5" class="modalEntryTarget" type="text"/></div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" data-dismiss="modal" type="button">Cancel</button>
+                            <button class="btn btn-primary" type="button" onclick="javascript:addNewEntry()">Add</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="m-5">&nbsp;</div>
+        <div class="fixed-bottom p-2 bg-shady">
+            <form method="POST" action="/dns/">
+                {% csrf_token %}
+                <button class="btn btn-primary" data-target="#addNewEntryPopup" data-toggle="modal" type="button">
+                    (+) Add new entry
+                </button>
+                <button class="btn btn-primary" type="button" id="save" name="save">
+                    Save config
+                </button>
+                <button class="btn btn-primary" type="submit" id="restart" name="restart">
+                    Restart bind
+                </button>
+
+                <button class="btn btn-primary" type="submit" id="save-and-restart" name="save-and-restart">
+                    Save config & restart bind
+                </button>
+            </form>
+        </div>
+    </div>
+
+
+</body>
+</html>

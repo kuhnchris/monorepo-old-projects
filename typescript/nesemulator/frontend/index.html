@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>NES (6502) Emulator</title>
+</head>
+
+<body>
+  <h1>Emulation</h1>
+  <div>
+    <button id="clock" onclick="javascript:clock()">CPU Clock Tick</button>
+    <button id="clock" onclick="javascript:reset()">RESET</button>
+    <button id="clock" onclick="javascript:loadrom('olc.nes')">Load OLC test</button>
+    <button id="clock" onclick="javascript:loadrom('nestest.nes')">Load NES test</button>
+  </div>
+
+  <div>Memory:
+    <pre id="memory"></pre>
+  </div>
+  <div>Disassembler:
+    <pre id="disasm"></pre>
+  </div>
+  <div>CPU:
+    <pre id="cpu"></pre>
+  </div>
+
+
+  <script>
+    var exports = {};
+    var emuRequired = require("../emulator.js");
+    var emulator = new emuRequired.EmulatorHelper();
+    emulator.initBus();
+    emulator.loadRom("olc.nes");
+    emulator.resetCPU();
+
+    function updateInfo() {
+      document.getElementById("memory").innerText = emulator.printMemory(false);
+      document.getElementById("disasm").innerText = emulator.disassemble();
+      document.getElementById("cpu").innerText = emulator.cpuParameters();
+    }
+    function clock() {
+      emulator.progressCPUClock();
+      updateInfo();
+    }
+    function reset() {
+      emulator.resetCPU();
+    }
+    function loadrom(rom){
+      emulator.loadRom(rom);
+    }
+    updateInfo();
+  </script>
+</body>
+
+</html>

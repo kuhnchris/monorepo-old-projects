@@ -1,0 +1,17 @@
+{
+  "name": "ui5wysiwygeditor",
+  "version": "0.0.1",
+  "description": "WYSIWYG Editor for SAP/OpenUI5",
+  "main": "index.html",
+  "scripts": {
+  },
+  "keywords": [
+    "ui5",
+    "openui5",
+    "sapui5",
+    "wysiwyg",
+    "editor"
+  ],
+  "author": "KuhnChris",
+  "license": "SEE LICENCE IN LICENSE.md"
+}

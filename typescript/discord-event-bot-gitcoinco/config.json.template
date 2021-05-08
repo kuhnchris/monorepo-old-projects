@@ -1,0 +1,9 @@
+{
+    "logChannel": "botlog",
+    "discordToken": "xxx",
+    "botCommandPrefix": "%",
+    "categoryChannel": "botchans",
+    "allowRoles": [
+        "admins"
+    ]
+}

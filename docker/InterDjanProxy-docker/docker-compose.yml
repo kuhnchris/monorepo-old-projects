@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  praas-service:
+    build: .
+    environment:
+      - SERVER_PORT=8800
+      - SERVER_HOST=alpha-centauri.wa.zettaimurri.de
+    volumes:
+      - ./db.sqlite3:/app/app/db.sqlite3
+    ports:
+      - 8800:8800

@@ -1,0 +1,49 @@
+JSDOC Parser:
+    ✔ Implement corner case for nested objects in classes @done(20-01-02 23:25)
+        ✔ Add detection for ns->class->class/ns/enum @done(20-01-02 23:25)
+        ✔ Basically: loop over objects, @done(20-01-02 23:25)
+            if this.nodeType == class && this.children[x].nodeType == enum/ns/class 
+                does this.name + this.nodeType == ns exist?
+                    no --> create node with type == ns
+                remove child from nodeType == class's children, add to nodetype == ns's children
+
+    ✔ Optional parameter(s) on methods and classes @done(20-01-02 00:55)y
+    ✔ Add complex types to IParameter Interface for nested objects in parameter(s) @done(20-01-02 01:39)
+    ✔ Add special case for aMappings[] != aMappings (technically valid, but stupid) @started(20-01-02 01:40) @done(20-01-02 01:41) @lasted(1m58s)
+    ☐ special case sap.ui.core.mvc.ViewType (defined in sap.ui.core/library.js)
+
+Typescript Exporter:
+    ☐ Test more exports (d.ts/ directory)
+    ✔ Add export for complex types @started(20-01-02 01:42) @done(20-01-02 02:07) @lasted(25m39s)
+    ✔ Fix classes getting exported as namespaces albeit being classes @done(20-01-02 23:26)
+        ✔ Intermediate fix implemented @done(20-01-02 14:59)
+    ☐ Fix inheritance (if same method or property is already in 'extends' type remove it)
+        ✔ adding complex types mitigated the problem a bit @done(20-01-02 02:08)
+        ✔ restricting the amount of property exported helped a bit @done(20-01-02 02:09)
+        ✔ changing all included parameters to optional helped a little bit @done(20-01-02 02:09)
+        ☐ last option possibilities (DO NOT USE UNLESS NO MORE IDEAS):
+            ✔ Possibly adding |any on every parameter (not pretty) @done(20-01-04 02:25)
+            ☐ Possibly adding a default stub <methodname>(...params: any): any
+    ✔ Combined types (split | and typeParse every element) @started(20-01-03 09:52) @done(20-01-03 10:01) @lasted(9m42s)
+    ☐ rewrite namesapce/import 
+        objects.foreach() if not found => treat as foreign (e.a. if not in current document)
+    ☐ manual fix for sap.ui.core.mvc.ViewType actually coming from sap.ui.core
+    ✔ workaround for module:xxx/yyy/zzz => xxx.yyy.zzz @started(20-01-04 02:28) @done(20-01-04 02:33) @lasted(5m45s)
+    ☐ parameters => normal before optional
+    ☐ return param |any
+
+Project-specific setup:
+    ✔ use upstream/master from github.com/sap/openui5 due to PRs for JSDoc related fixes @done(20-01-03 10:02)
+
+
+Collection of PRs and commits submitted (and merged):
+    ✔ sap/openui5#2773 (sap.ui.core.Patcher typo) @done(20-01-02 00:56)
+    ☐ sap/openui5#2775 (sap.ui.core.Popup jsdoc)
+    ✘ sap/openui5#2745 (sap.ui.core.RenderManager extends Object) @cancelled(20-01-02 00:59)
+    ✔ sap/openui5#2776 (sap.ui.core.Configuration jsdoc special case) @done(20-01-02 16:36)
+
+References:
+    ☐ https://github.com/SAP/openui5/blob/master/docs/guidelines/classexample.md
+
+POI:
+    ☐ /u/codeworrior

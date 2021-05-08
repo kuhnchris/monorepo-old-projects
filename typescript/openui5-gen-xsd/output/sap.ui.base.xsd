@@ -1,0 +1,367 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+targetNamespace="sap.ui.base"
+xmlns="sap.ui.base"
+elementFormDefault="qualified">
+  <xs:element name="DataType" type="DataType" />
+  <xs:complexType name="DataType">
+    <xs:annotation>
+      <xs:documentation>
+Represents the type of properties in a &lt;code&gt;ManagedObject&lt;/code&gt; class.
+
+Each type provides some metadata like its {@link #getName qualified name} or its
+{@link #getBaseType base type} in case of a derived type. Array types provide information
+about the allowed {@link #getComponentType type of components} in an array, enumeration types
+inform about the set of their allowed {@link #getEnumValues keys and values}.
+
+Each type has a method to {@link #isValid check whether a value is valid} for a property
+of that type.
+
+Already defined types can be looked up by calling {@link #.getType DataType.getType}, new
+types can only be created by calling the factory method {@link #.createType DataType.createType},
+calling the constructor will throw an error.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:complexType>
+  <xs:element name="Event" type="Event" />
+  <xs:complexType name="Event">
+    <xs:annotation>
+      <xs:documentation>
+An Event object consisting of an ID, a source and a map of parameters.
+Implements {@link sap.ui.base.Poolable} and therefore an event object in the event handler will be reset by {@link sap.ui.base.ObjectPool} after the event handler is done.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="">
+  </xs:extension>
+</xs:complexContent>
+  </xs:complexType>
+  <xs:element name="EventProvider" type="EventProvider" />
+  <xs:complexType name="EventProvider">
+    <xs:annotation>
+      <xs:documentation>
+Provides eventing capabilities for objects like attaching or detaching event handlers for events which are notified when events are fired.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="">
+  </xs:extension>
+</xs:complexContent>
+  </xs:complexType>
+  <xs:element name="Interface" type="Interface" />
+  <xs:complexType name="Interface">
+    <xs:annotation>
+      <xs:documentation>
+A class whose instances act as a facade for other objects.
+
+&lt;b&gt;Note:&lt;/b&gt; If a class returns a facade in its constructor, only the defined functions will be visible, no
+internals of the class can be accessed.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:complexType>
+  <xs:element name="ManagedObject" type="ManagedObject" />
+  <xs:complexType name="ManagedObject">
+    <xs:annotation>
+      <xs:documentation>
+Base Class that introduces some basic concepts, such as, state management and data binding.
+
+New subclasses of ManagedObject are created with a call to {@link #.extend ManagedObject.extend} and can make use
+of the following managed features:
+
+
+&lt;h3&gt;Properties&lt;/h3&gt;
+Managed properties represent the state of a ManagedObject. They can store a single value of a simple data type
+(like 'string' or 'int'). They have a &lt;i&gt;name&lt;/i&gt; (e.g. 'size') and methods to get the current value (&lt;code&gt;getSize&lt;/code&gt;),
+or to set a new value (&lt;code&gt;setSize&lt;/code&gt;). When a property is modified by calling the setter, the ManagedObject is marked as invalidated.
+A managed property can be bound against a property in a {@link sap.ui.model.Model} by using the {@link #bindProperty} method.
+Updates to the model property will be automatically reflected in the managed property and - if TwoWay databinding is active,
+changes to the managed property will be reflected in the model. An existing binding can be removed by calling {@link #unbindProperty}.
+
+If a ManagedObject is cloned, the clone will have the same values for its managed properties as the source of the
+clone - if the property wasn't bound. If it is bound, the property in the clone will be bound to the same
+model property as in the source.
+
+Details about the declaration of a managed property, the metadata that describes it and the set of methods that are automatically
+generated to access it, can be found in the documentation of the {@link sap.ui.base.ManagedObject.extend extend } method.
+
+
+&lt;h3&gt;Aggregations&lt;/h3&gt;
+Managed aggregations can store one or more references to other ManagedObjects. They are a mean to control the lifecycle
+of the aggregated objects: one ManagedObject can be aggregated by at most one parent ManagedObject at any time.
+When a ManagedObject is destroyed, all aggregated objects are destroyed as well and the object itself is removed from
+its parent. That is, aggregations won't contain destroyed objects or null/undefined.
+
+Aggregations have a &lt;i&gt;name&lt;/i&gt; ('e.g 'header' or 'items'), a &lt;i&gt;cardinality&lt;/i&gt; ('0..1' or '0..n') and are of a specific
+&lt;i&gt;type&lt;/i&gt; (which must be a subclass of ManagedObject as well or a UI5 interface). A ManagedObject will provide methods to
+set or get the aggregated object for a specific aggregation of cardinality 0..1 (e.g. &lt;code&gt;setHeader&lt;/code&gt;, &lt;code&gt;getHeader&lt;/code&gt;
+for an aggregation named 'header'). For an aggregation of cardinality 0..n, there are methods to get all aggregated objects
+(&lt;code&gt;getItems&lt;/code&gt;), to locate an object in the aggregation (e.g. &lt;code&gt;indexOfItem&lt;/code&gt;), to add, insert or remove
+a single aggregated object (&lt;code&gt;addItem&lt;/code&gt;, &lt;code&gt;insertItem&lt;/code&gt;, &lt;code&gt;removeItem&lt;/code&gt;) or to remove or destroy
+all objects from an aggregation (&lt;code&gt;removeAllItems&lt;/code&gt;, &lt;code&gt;destroyItems&lt;/code&gt;).
+
+Details about the declaration of a managed aggregation, the metadata that describes the aggregation, and the set of methods that are automatically
+generated to access it, can be found in the documentation of the {@link sap.ui.base.ManagedObject.extend extend} method.
+
+Aggregations of cardinality 0..n can be bound to a collection in a model by using {@link #bindAggregation} (and unbound again
+using {@link #unbindAggregation}). For each context in the model collection, a corresponding object will be created in the
+managed aggregation, either by cloning a template object or by calling a factory function.
+
+Aggregations also control the databinding context of bound objects: by default, aggregated objects inherit all models
+and binding contexts from their parent object.
+
+When a ManagedObject is cloned, all aggregated objects will be cloned as well - but only if they haven't been added by
+databinding. In that case, the aggregation in the clone will be bound to the same model collection.
+
+
+&lt;h3&gt;Associations&lt;/h3&gt;
+Managed associations also form a relationship between objects, but they don't define a lifecycle for the
+associated objects. They even can 'break' in the sense that an associated object might have been destroyed already
+although it is still referenced in an association. For the same reason, the internal storage for associations
+are not direct object references but only the IDs of the associated target objects.
+
+Associations have a &lt;i&gt;name&lt;/i&gt; ('e.g 'initialFocus'), a &lt;i&gt;cardinality&lt;/i&gt; ('0..1' or '0..n') and are of a specific &lt;i&gt;type&lt;/i&gt;
+(which must be a subclass of ManagedObject as well or a UI5 interface). A ManagedObject will provide methods to set or get
+the associated object for a specific association of cardinality 0..1 (e.g. &lt;code&gt;setInitialFocus&lt;/code&gt;, &lt;code&gt;getInitialFocus&lt;/code&gt;).
+For an association of cardinality 0..n, there are methods to get all associated objects (&lt;code&gt;getRefItems&lt;/code&gt;),
+to add, insert or remove a single associated object (&lt;code&gt;addRefItem&lt;/code&gt;,
+&lt;code&gt;insertRefItem&lt;/code&gt;, &lt;code&gt;removeRefItem&lt;/code&gt;) or to remove all objects from an association
+(&lt;code&gt;removeAllRefItems&lt;/code&gt;).
+
+Details about the declaration of a managed association, the metadata that describes it and the set of methods that are automatically
+generated to access it, can be found in the documentation of the {@link sap.ui.base.ManagedObject.extend extend} method.
+
+Associations can't be bound to the model.
+
+When a ManagedObject is cloned, the result for an association depends on the relationship between the associated target
+object and the root of the clone operation. If the associated object is part of the to-be-cloned object tree (reachable
+via aggregations from the root of the clone operation), then the cloned association will reference the clone of the
+associated object. Otherwise the association will reference the same object as in the original tree.
+When a ManagedObject is destroyed, other objects that are only associated, are not affected by the destroy operation.
+
+
+&lt;h3&gt;Events&lt;/h3&gt;
+Managed events provide a mean for communicating important state changes to an arbitrary number of 'interested' listeners.
+Events have a &lt;i&gt;name&lt;/i&gt; and (optionally) a set of &lt;i&gt;parameters&lt;/i&gt;. For each event there will be methods to add or remove an event
+listener as well as a method to fire the event. (e.g. &lt;code&gt;attachChange&lt;/code&gt;, &lt;code&gt;detachChange&lt;/code&gt;, &lt;code&gt;fireChange&lt;/code&gt;
+for an event named 'change').
+
+Details about the declaration of managed events, the metadata that describes the event, and the set of methods that are automatically
+generated to access it, can be found in the documentation of the {@link sap.ui.base.ManagedObject.extend extend} method.
+
+When a ManagedObject is cloned, all listeners registered for any event in the clone source are also registered to the
+clone. Later changes are not reflected in any direction (neither from source to clone, nor vice versa).
+
+
+&lt;a name="lowlevelapi"&gt;&lt;h3&gt;Low Level APIs:&lt;/h3&gt;&lt;/a&gt;
+The prototype of ManagedObject provides several generic, low level APIs to manage properties, aggregations, associations,
+and events. These generic methods are solely intended for implementing higher level, non-generic methods that manage
+a single managed property etc. (e.g. a function &lt;code&gt;setSize(value)&lt;/code&gt; that sets a new value for property 'size').
+{@link sap.ui.base.ManagedObject.extend} creates default implementations of those higher level APIs for all managed aspects.
+The implementation of a subclass then can override those default implementations with a more specific implementation,
+e.g. to implement a side effect when a specific property is set or retrieved.
+It is therefore important to understand that the generic low-level methods ARE NOT SUITABLE FOR GENERIC ACCESS to the
+state of a managed object, as that would bypass the overriding higher level methods and their side effects.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="EventProvider">
+  </xs:extension>
+</xs:complexContent>
+  </xs:complexType>
+  <xs:element name="ManagedObjectMetadata" type="ManagedObjectMetadata" />
+  <xs:complexType name="ManagedObjectMetadata">
+    <xs:annotation>
+      <xs:documentation>
+&lt;strong&gt;Note about Info Objects&lt;/strong&gt;
+
+Several methods in this class return info objects that describe a property,
+aggregation, association or event of the class described by this metadata object.
+The type, structure and behavior of these info objects is not yet documented and
+not part of the stable, public API.
+
+Code using such methods and the returned info objects therefore needs to be aware
+of the following restrictions:
+
+&lt;ul&gt;
+&lt;li&gt;the set of properties exposed by each info object, their type and value
+    might change as well as the class of the info object itself.
+
+    Properties that represent settings provided during class definition
+    (in the oClassInfo parameter of the 'extend' call, e.g. 'type', 'multiple'
+    of an aggregation) are more likely to stay the same than additional, derived
+    properties like '_iKind'.&lt;/li&gt;
+
+&lt;li&gt;info objects must not be modified / enriched although they technically could.&lt;/li&gt;
+
+&lt;li&gt;the period of validity of info objects is not defined. They should be
+    referenced only for a short time and not be kept as members of long living
+    objects or closures.&lt;/li&gt;
+
+&lt;/ul&gt;
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="Metadata">
+  </xs:extension>
+</xs:complexContent>
+  </xs:complexType>
+  <xs:element name="ManagedObjectObserver" type="ManagedObjectObserver" />
+  <xs:complexType name="ManagedObjectObserver">
+    <xs:annotation>
+      <xs:documentation>
+Use the &lt;code&gt;ManagedObjectObserver&lt;/code&gt; to get notified when properties, aggregations or associations of a
+&lt;code&gt;ManagedObject&lt;/code&gt; instance have changed.
+
+Use the {@link #observe} method to add instances of ManagedObject that should be observed or to enhance
+the set of observed properties, aggregations etc. for an already observed instance.
+
+Use the {@link #unobserve} method to stop observing an instance of ManagedObject or to reduce the set of
+observed properties, aggregations etc. for an observed instance.
+
+Use the {@link #disconnect} method to completely stop observing all instances of ManagedObject hat previously
+had been added to this observer.
+
+The only parameter to the constructor is a function &lt;code&gt;fnCallback&lt;/code&gt; which will be called for every
+observed change. Depending on the type of the change, different change objects are passed to the callback:
+
+&lt;h4&gt;Property Change&lt;/h4&gt;
+{string}
+     change.name the name of the property that changed&lt;br/&gt;
+{string}
+     change.type 'property'&lt;br/&gt;
+{object}
+     change.object the managed object instance on which the change occurred&lt;br/&gt;
+{any}
+     change.old the old value&lt;br/&gt;
+{any}
+     change.current the new value&lt;br/&gt;
+
+&lt;h4&gt;Aggregation Change&lt;/h4&gt;
+{string}
+     change.name the name of the aggregation that changed&lt;br/&gt;
+{string}
+     change.type 'aggregation'&lt;br/&gt;
+{object}
+     change.object the managed object instance on which the change occurred&lt;br/&gt;
+{any}
+     change.mutation 'remove' or 'insert'&lt;br/&gt;
+{sap.ui.base.ManagedObject}
+     change.child the child managed object instance&lt;br/&gt;
+
+&lt;h4&gt;Association Change&lt;/h4&gt;
+{string}
+     change.name the name of the association that changed&lt;br/&gt;
+{string}
+     change.type 'association'&lt;br/&gt;
+{object}
+     change.object the managed object instance on which the change occurred&lt;br/&gt;
+{any}
+     change.mutation 'remove' or 'insert'&lt;br/&gt;
+{string|string[]}
+     change.ids the ids that changed&lt;br/&gt;
+
+&lt;h4&gt;Event Registry Change&lt;/h4&gt;
+{string}
+     change.name the name of the event that changed&lt;br/&gt;
+{string}
+     change.type 'event'&lt;br/&gt;
+{object}
+     change.object the managed object instance on which the change occurred&lt;br/&gt;
+{any}
+     change.mutation 'remove' or 'insert'&lt;br/&gt;
+{object}
+     change.listener the listener object&lt;br/&gt;
+{object}
+     change.func the listeners function&lt;br/&gt;
+{object}
+     change.data the events data&lt;br/&gt;
+
+&lt;h4&gt;Binding Change&lt;/h4&gt;
+{string}
+     change.name the name of the binding that changed&lt;br/&gt;
+{string}
+     change.type 'binding'&lt;br/&gt;
+{object}
+     change.object the managed object instance on which the change occurred&lt;br/&gt;
+{any}
+     change.mutation 'prepare', 'ready' or 'remove'&lt;br/&gt;
+{object}
+     change.bindingInfo the binding info object&lt;br/&gt;
+{string}
+     change.memberType 'property' or 'aggregation'&lt;br/&gt;
+
+&lt;h4&gt;destroy managed Object&lt;/h4&gt;
+{string}
+     change.type 'destroy'&lt;br/&gt;
+{object}
+     change.object the managed object instance on which the change occurred&lt;br/&gt;
+      </xs:documentation>
+    </xs:annotation>
+  </xs:complexType>
+  <xs:element name="Metadata" type="Metadata" />
+  <xs:complexType name="Metadata">
+    <xs:annotation>
+      <xs:documentation>
+Metadata for a class.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:complexType>
+  <xs:element name="Object" type="Object" />
+  <xs:complexType name="Object">
+    <xs:annotation>
+      <xs:documentation>
+Base class for all SAPUI5 Objects.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:complexType>
+  <xs:element name="ObjectPool" type="ObjectPool" />
+  <xs:complexType name="ObjectPool">
+    <xs:annotation>
+      <xs:documentation>
+Manages a pool of objects for reuse, all of the same type;
+the type has to be specified at construction time.
+
+Each pool maintains a list of free objects of the given type.
+If {@link sap.ui.base.ObjectPool.prototype.borrowObject} is called, an existing free object
+is taken from the pool. When no free object is available, a new instance is created by calling
+the constructor without any arguments. In either case, the {@link sap.ui.base.Poolable#init}
+method is called on the object to initialize it with the data for the current caller.
+
+When the object is no longer needed, it has to be returned to the pool by calling {@link #returnObject}.
+At that point in time, {@link sap.ui.base.Poolable#reset} is called on the object to remove all data
+from it. Then it is is added back to the list of free objects for future reuse.
+
+See {@link sap.ui.base.Poolable} for a description of the contract for poolable objects.
+
+Example:
+&lt;pre&gt;
+  sap.ui.define([
+    "sap/ui/base/Event",
+    "sap/ui/base/ObjectPool"
+  ], function(Event, ObjectPool) {
+
+    // create a pool for events
+    var oEventPool = new ObjectPool(Event);
+
+    ...
+
+    // borrow an instance and initialize it at the same time
+    var oEvent = oEventPool.borrowObject('myEvent', this, {foo: 'bar'});
+    // this internally calls oEvent.init('myEvent', this, {foo: 'bar'})
+
+    // return the borrowed object
+    oEventPool.returnObject(oEvent);
+    // this internally calls oEvent.reset()
+
+    ...
+
+  }});
+&lt;/pre&gt;
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="">
+  </xs:extension>
+</xs:complexContent>
+  </xs:complexType>
+</xs:schema>

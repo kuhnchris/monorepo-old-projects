@@ -1,0 +1,6 @@
+name: 'ExampleDockerActionWritingAFile'
+description: 'Example Docker Action that writes a file.'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  entrypoint: '/entrypoint.sh'

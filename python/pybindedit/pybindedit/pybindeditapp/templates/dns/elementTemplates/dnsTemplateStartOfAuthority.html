@@ -1,0 +1,53 @@
+{% comment %}
+    parameters:
+        additional_row_css: "hidden"
+        id: "template-entry"
+        subdomain: ""
+        dir: ""
+        type: ""
+        target: ""
+        target2: ""
+        parameters_list: []
+{% endcomment %}
+<div class="row {{ additional_row_css }}" ondrop="drop(event)" ondragover="allowDrop(event)"  draggable="true" ondragstart="drag(event)" id="{{ id }}">
+    <div class="col-2">
+        <div class="row">
+            <div class="col-8">start of authority</div>
+            <div class="col-4">
+                <a href="#" onclick="javascript:deleteRow()"><i class="fas fa-minus-square"></i></a>
+                <a href="#" onclick="javascript:editRow()"><i class="fas fa-edit"></i></a>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-3 editable" contenteditable="true">{{ subdomain }}</div>
+    <div class="col-sm-1 editable" contenteditable="true">{{ dir }}</div>
+    <div class="col-sm-1 editable" contenteditable="true">{{ type }}</div>
+    <div class="col-sm-2 editable" contenteditable="true">{{ target }}</div>
+    <div class="col-sm-3 editable" contenteditable="true">{{ target2 }}</div>
+    <div class="col-12">
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-sm-5 header" contenteditable="false">
+                parameter
+            </div>
+            <div class="col-sm-5 header" contenteditable="false">
+                comment
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-10 editable" contenteditable="false">
+            {% for opt in parameters_list %}
+                <div class="row">
+                    <div class="col-6 optLeft" contenteditable="true">
+                        {{ opt.value }}
+                    </div>
+                    <div class="col-6 optRight" contenteditable="true">
+                        {{ opt.comment }}
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>

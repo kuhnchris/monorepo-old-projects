@@ -1,0 +1,13 @@
+$TTL 60s
+xxx.de. IN SOA xxx.de. xxx.de. (
+                2018123100      ; Serial
+                60s             ; Refresh
+                60s             ; Retry
+                60s             ; Expire
+                60s )           ; Negative caching of TTL
+
+; Name servers
+xxx.de.          60   IN   NS   xxx.de.
+
+; Host addresses
+xxx.de.          60   IN   A   127.0.0.1
